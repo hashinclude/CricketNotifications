@@ -9,6 +9,7 @@
         "tabs", "http://*/*", "https://*/*", "storage", "notifications"
     ],
     "browser_action": {
+        "default_icon" : "cricico.png",
         "default_popup": "popup.html"
     },
     "background": {
