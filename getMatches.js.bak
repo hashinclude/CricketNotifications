@@ -1,0 +1,24 @@
+function getMatches(elementID){
+    chrome.tabs.getAllInWindow(
+        function(tab){
+        xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", "http://static.cricinfo.com/rss/livescores.xml", false);
+        xmlhttp.send();
+        matchListXML = xmlhttp.responseXML;
+        matchList = matchListXML.getElementsByTagName("item");
+        concated="<table>";
+        for(i=0;i<matchList.length;i++){
+            concated += "<tr><h5><input type=\"checkbox\" id=\"" + matchList[i].children[1].textContent + "\"><label for=\"" + matchList[i].children[1].textContent  + "\">" +  matchList[i].children[0].textContent + "</label></h5></tr>";
+            //concated += "<a href=\"" + matchList[i].children[1].textContent + "\">" + "blastatus"  + "</a>";
+        }
+        concated += "</table>";
+        document.getElementById('accordion').innerHTML="<h3>Cricket</h3><div>" + concated + "</div>" + "<h3>Football</h3><div>" + concated + "</div>";
+
+        $(function() {
+            $( "#accordion" ).accordion();
+        });
+    }
+    );
+}
+
+getMatches('bla');

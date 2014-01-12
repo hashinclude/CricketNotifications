@@ -1,0 +1,11 @@
+REQUIRED UPDATES
+* local database being paused (NOT cleared) once the dropdown is closed :3
+* the update function has an issue -> in case of 2 updates at over id's x and y, we're swapping x and y continously (CURRENTLY solved it by showing just the latest update in case of more than 1 update)
+* remove tags from the print statement or let's try putting 'em in html. Eg,
+		 Over:17.3 OUT Doherty to Bell, slog swept, missed completely and <b>Bell is bowled.</b> He nailed one into the stands previously but this is to a ball angled in, cramping Bell for room and it hurried onto him and his swipe across the line failed to gain any connection
+	
+CAN ADD
+* score being updated with a delay - might be a better idea updating from cricinfo game engine rather than the rss feed (update is slow over there)
+
+ADDED
+* sound added
