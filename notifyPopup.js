@@ -45,10 +45,10 @@ function notificationPopups(url){
             players = cur.players;
             // console.log(bowler);
             det = cur.event;
-            // console.log(det);
+            console.log(det);
             commentary = cur.text;
             commentary = commentary.replace(regex, "");
-            if (commentary!=null && commentary != undefined  && det.match(/[a-z]/i)){ // check for commentary = (\s\S)
+            if (commentary!=null && commentary != undefined  && (det[0] >= 4 || det.match(/[A-Z]/))) { // check for commentary = (\s\S)
                 //console.log(localStorage.getItem("lastNotification-"+url));
                 //console.log(over);
                 if(localStorage.getItem("lastNotification-" + url) < over || (localStorage.getItem("lastNotification-" + url) == over && localStorage.getItem("lastComment-" + url) != commentary)) {
