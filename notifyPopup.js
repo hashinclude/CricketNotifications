@@ -1,100 +1,72 @@
-function httpGet(origUrl)
-{
-    splitUrl = origUrl.split("/");
-    theUrl = "http://www.espncricinfo.com/netstorage/" + splitUrl[splitUrl.length - 1];
-    xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false );
-    xmlHttp.send( null );
-    return  xmlHttp.responseText;
-}
 function audioNotification(){
     var yourSound = new Audio('POP.WAV');
     yourSound.play();
 }
 function notify(title, msg, url) {
-    var havePermission = window.webkitNotifications.checkPermission();
-    if (havePermission == 0) {
-        // 0 is PERMISSION_ALLOWED
-        var notification = window.webkitNotifications.createNotification(
-            'http://web.iiit.ac.in/~aishvarya.singh/cricket.jpg',
-            title,
-            msg
-        );
-        notification.onclick = function(){
-            window.open(url, "_blank");
-            this.cancel();
-        };
-        notification.show();
-        setTimeout(function(){
-            notification.cancel();
-        }, 10000);
-    } else {
-        window.webkitNotifications.requestPermission();
-    }
-} 
-function notificationPopups(url){
-    var txt = httpGet(url);
-    var rel = txt.toString();
-    var re = /<td width="30" align="right"><p class="commsText">[.\n\s\S]*?<tr>/g;
-    results=[]
-    temp=[]
-    count=0;
-
-    //re2 = new RegExp(/<p class="statusText">([.\n\s\S]*?)<\/p>/g);
-    //re2.exec(txt)[1];
-
-    //txt.match(re2);
-    //re2 = /<p class="statusText">[.\n\s\S]*?<\/p>/g;
-    //txt.match(re2)[0];
-
-
-    var regex = /(<([^>]+)>)/ig
-    retitle = new RegExp(/<meta property="og:title" content="([.\n\s\S]*?)"\/>/g);
-    titlematch = retitle.exec(rel)[1];
-
-    while ((temp = re.exec(rel)) !== null)
-        {
-            // temp[0];
-            if (temp[0].indexOf("commsImportant") != -1) {
-                results.push(temp[0]);
+    var notif = chrome.notifications.create(
+            url,
+            {   
+                'type': 'basic',
+                'iconUrl' : 'http://4.bp.blogspot.com/-7MZ6c0_tVpI/TomENvjGD4I/AAAAAAAAAGo/iZjcX2pg9fg/s45/test-cricket-ball.jpg',
+                'title' : title,
+                'message' : msg
+            },
+            function(notifid){
+                console.log("Last error:", chrome.runtime.lastError); 
             }
-            count+=1;
-            // rel=temp[1];
-            // console.log("match");
-            // console.log(re.lastIndex);
-            if (count == 10)
-                break;
-        }
-        var i = 0;
-        while (i<results.length && i<1) {
+    );
+    chrome.notifications.onClicked.addListener(function(notifid) {
+        window.open(url, "_blank");
+        chrome.notifications.clear(notifid, function(cleared){});
+    });
+    setTimeout(function(){
+        chrome.notifications.clear(url, function(cleared){});
+    }, 10000);
+} 
+running = {}
+function notificationPopups(url){
+    if (url in running) {
+        return;
+    }
+    console.log(url);
+    running[url] = 1;
+    $.get(url, function(txt) {
+        console.log("Retrieved Page");
+        count=0;
+        titlematch = txt.match.team1_name + ' vs. ' + txt.match.team2_name + ', ' + txt.match.town_name;
+        var regex = /(<([^>]+)>)/ig;
+        console.log(txt.comms);
+        results = txt.comms[0].ball;
+        madeNoise = 0;
+        for (i = 0; i < results.length; i++) {
             cur = results[i];
-            // console.log(cur);
-            results[i];
-            // re3 = new RegExp(/<p class="commsText">([.\n\s\S]*?)<\/p><\/td>/g);
-            // over = re3.exec(cur)[1];
-            re4 = new RegExp(/<p class="commsText">([.\n\s\S]*?)<\/p>([.\n\s\S]*?)<p class="commsText">([.\n\s\S]*?)<span class="commsImportant">([.\n\s\S]*?)<\/span>[^a-z]*([\s\S]*)<\/p>/gm);
-            arr = re4.exec(cur);
-            over = arr[1];
+            over = cur.overs_actual;
             // console.log(over);
-            bowler = arr[3];
+            players = cur.players;
             // console.log(bowler);
-            det = arr[4];
+            det = cur.event;
             // console.log(det);
-            commentary = arr[5];
+            commentary = cur.text;
             commentary = commentary.replace(regex, "");
-            if (commentary!=null && commentary != undefined){ // check for commentary = (\s\S)
+            if (commentary!=null && commentary != undefined  && det.match(/[a-z]/i)){ // check for commentary = (\s\S)
                 //console.log(localStorage.getItem("lastNotification-"+url));
                 //console.log(over);
-                if(localStorage.getItem("lastNotification-" + url) != over){
-                    notify(titlematch, "Over:"+over+", "+det+" "+bowler+" "+commentary, url);
-                    audioNotification();
+                if(localStorage.getItem("lastNotification-" + url) != over || (localStorage.getItem("lastNotification-" + url) == over && localStorage.getItem("lastComment-" + url) != commentary)) {
+                    notify(titlematch, "Over : "+over+", "+players+" - " + det +" "+commentary, url);
+                    if (madeNoise == 0) {
+                        audioNotification();
+                        madeNoise = 1;
+                    }
                     localStorage.removeItem("lastNotification-" + url);
                     localStorage.setItem("lastNotification-" + url, over);
+                    localStorage.setItem("lastComment-" + url, commentary);
+                    break;
                 }
                 //console.log("Over:"+over+"  "+det+" "+bowler+" "+commentary);
             }
-            i+=1;
+            delete running[url];
         }
+    });
 }
 
 //console.log(results[1]);

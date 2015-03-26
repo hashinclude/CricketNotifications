@@ -1,9 +1,11 @@
-function setStatusAndTitle(origUrl, ele){
+function fixurl (origUrl) {
     splitUrl = origUrl.split("/");
     theUrl = "http://www.espncricinfo.com/netstorage/" + splitUrl[splitUrl.length - 1].split("?")[0];
     theUrl = theUrl.replace("html", "json");
-    console.log(theUrl);
-    $.get(theUrl, function(response) {
+    return theUrl;
+}
+function setStatusAndTitle(origUrl, ele){
+    $.get(origUrl, function(response) {
         ele.innerHTML = response.live.status;
     });
 };
@@ -43,7 +45,7 @@ function getMatches(){
                     newActiveMatches = [];
                     matchURLs = [];
                     for(i=0;i<matchList.length;i++)
-                        matchURLs.push(matchList[i].getElementsByTagName("link")[0].textContent);
+                        matchURLs.push(fixurl(matchList[i].getElementsByTagName("link")[0].textContent));
                     // console.log(matchURLs);
                     // console.log(activeMatches);
                     for(i=0;i<activeMatches.length;i++){
@@ -54,7 +56,7 @@ function getMatches(){
                     localStorage.setItem("activeMatches", JSON.stringify(newActiveMatches));
                     //console.log(newActiveMatches);
                     for(i=0;i<matchList.length;i++){
-                        link = matchList[i].getElementsByTagName("link")[0].textContent;
+                        link = fixurl(matchList[i].getElementsByTagName("link")[0].textContent);
                         title = matchList[i].getElementsByTagName("title")[0].textContent;
                         concated += "<h3 value=\"" + i + "\" " + "url=\"" + link + "\"><input class=\"checkbox\" type=\"checkbox\" id=\"" + link + "\"";
                         if(newActiveMatches.indexOf(link) != -1){
