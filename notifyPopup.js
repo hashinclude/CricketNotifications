@@ -12,7 +12,7 @@ function notify(title, msg, url) {
                 'message' : msg
             },
             function(notifid){
-                console.log("Last error:", chrome.runtime.lastError); 
+                // console.log("Last error:", chrome.runtime.lastError); 
             }
     );
     chrome.notifications.onClicked.addListener(function(notifid) {
@@ -28,14 +28,14 @@ function notificationPopups(url){
     if (url in running) {
         return;
     }
-    console.log(url);
+    // console.log(url);
     running[url] = 1;
     $.get(url, function(txt) {
-        console.log("Retrieved Page");
+        // console.log("Retrieved Page");
         count=0;
         titlematch = txt.match.team1_name + ' vs. ' + txt.match.team2_name + ', ' + txt.match.town_name;
         var regex = /(<([^>]+)>)/ig;
-        console.log(txt.comms);
+        // console.log(txt.comms);
         results = txt.comms[0].ball;
         madeNoise = 0;
         for (i = 0; i < results.length; i++) {
@@ -51,7 +51,7 @@ function notificationPopups(url){
             if (commentary!=null && commentary != undefined  && det.match(/[a-z]/i)){ // check for commentary = (\s\S)
                 //console.log(localStorage.getItem("lastNotification-"+url));
                 //console.log(over);
-                if(localStorage.getItem("lastNotification-" + url) != over || (localStorage.getItem("lastNotification-" + url) == over && localStorage.getItem("lastComment-" + url) != commentary)) {
+                if(localStorage.getItem("lastNotification-" + url) < over || (localStorage.getItem("lastNotification-" + url) == over && localStorage.getItem("lastComment-" + url) != commentary)) {
                     notify(titlematch, "Over : "+over+", "+players+" - " + det +" "+commentary, url);
                     if (madeNoise == 0) {
                         audioNotification();

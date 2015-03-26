@@ -1,11 +1,13 @@
 function fixurl (origUrl) {
     splitUrl = origUrl.split("/");
-    theUrl = "http://www.espncricinfo.com/netstorage/" + splitUrl[splitUrl.length - 1].split("?")[0];
+    theUrl = "http://www.espncricinfo.com/ci/engine/match/" + splitUrl[splitUrl.length - 1].split("?")[0] + "?xhr=1";
     theUrl = theUrl.replace("html", "json");
     return theUrl;
 }
 function setStatusAndTitle(origUrl, ele){
+    // console.log("trying to retrieve " + origUrl);
     $.get(origUrl, function(response) {
+        // console.log("retrieved " + origUrl);
         ele.innerHTML = response.live.status;
     });
 };
