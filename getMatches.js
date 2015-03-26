@@ -1,6 +1,6 @@
 function fixurl (origUrl) {
     splitUrl = origUrl.split("/");
-    theUrl = "http://www.espncricinfo.com/ci/engine/match/" + splitUrl[splitUrl.length - 1].split("?")[0] + "?xhr=1";
+    theUrl = "http://www.espncricinfo.com/ci/engine/match/" + splitUrl[splitUrl.length - 1].split("?")[0];
     theUrl = theUrl.replace("html", "json");
     return theUrl;
 }

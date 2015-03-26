@@ -16,7 +16,7 @@ function notify(title, msg, url) {
             }
     );
     chrome.notifications.onClicked.addListener(function(notifid) {
-        window.open(url, "_blank");
+        window.open(url.replace("json", "html"), "_blank");
         chrome.notifications.clear(notifid, function(cleared){});
     });
     setTimeout(function(){
