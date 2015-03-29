@@ -33,7 +33,39 @@ function notificationPopups(url){
     $.get(url, function(txt) {
         // console.log("Retrieved Page");
         count=0;
-        titlematch = txt.match.team1_name + ' vs. ' + txt.match.team2_name + ', ' + txt.match.town_name;
+        team1_id = txt.team[0].team_id;
+        team2_id = txt.team[1].team_id;
+        if (team1_id != txt.match.team1_id)
+            team2_id = [team1_id, team1_id = team2_id][0];
+        innings = txt.innings;
+        team1_score = team2_score = team1_wickets = team2_wickets = -1;
+        current_team = team1_id;
+        for (i = 0; i < innings.length; i++) {
+            if (innings[i].batting_team_id == team1_id) {
+                team1_score = innings[i].runs;
+                team1_wickets = innings[i].wickets;
+                current_team = team1_id;
+            } else {
+                team2_score = innings[i].runs;
+                team2_wickets = innings[i].wickets;
+                current_team = team2_id;
+            }
+        }
+        team1_score_string = "";
+        team2_score_string = "";
+        if (team1_score != -1) {
+            team1_score_string = team1_score + '/' + team1_wickets;
+            if (current_team == team1_id) {
+                team1_score_string += " *";
+            }
+        }
+        if (team2_score != -1) {
+            team2_score_string = team2_score + '/' + team2_wickets;
+            if (current_team == team2_id) {
+                team2_score_string += " *";
+            }
+        }
+        titlematch = txt.match.team1_name + ' ' + team1_score_string + ' vs. ' + txt.match.team2_name + ' ' + team2_score_string;
         var regex = /(<([^>]+)>)/ig;
         // console.log(txt.comms);
         results = txt.comms[0].ball;
@@ -51,7 +83,7 @@ function notificationPopups(url){
             if (commentary!=null && commentary != undefined  && (det[0] >= 4 || det.match(/[A-Z]/))) { // check for commentary = (\s\S)
                 //console.log(localStorage.getItem("lastNotification-"+url));
                 //console.log(over);
-                if(localStorage.getItem("lastNotification-" + url) < over || (localStorage.getItem("lastNotification-" + url) == over && localStorage.getItem("lastComment-" + url) != commentary)) {
+                if(localStorage.getItem("lastNotification-" + url) < over || (localStorage.getItem("lastNotification-" + url) == over && localStorage.getItem("lastComment-" + url) != commentary) || (over - localStorage.getItem('lastNotification-' + url) > 1)) {
                     notify(titlematch, "Over : "+over+", "+players+" - " + det +" "+commentary, url);
                     if (madeNoise == 0) {
                         audioNotification();
