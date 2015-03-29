@@ -3,7 +3,7 @@
 
     "name": "CricketNotifier",
     "description": "Desktop notification of fours, sixes and wickets for selected matches",
-    "version": "1.0",
+    "version": "2.2",
 
     "permissions": [
         "tabs", "http://*/*", "https://*/*", "storage", "notifications"
